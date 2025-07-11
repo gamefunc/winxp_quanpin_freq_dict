@@ -1,0 +1,2 @@
+# winxp_quanpin_freq_dict
+提取winxp全拼输入法的词频词序字序用于导入win10/11自带拼音输入法
