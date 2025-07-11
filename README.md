@@ -30,7 +30,7 @@ win10我在2017年时使用了录制方式导出了字序和词序,用到了今�
     "https://github.com/gamefunc/winXpQuanPinRecord"
 
 2025.6.18我更新电脑从intel i5_2550k_z77 升级到 amd_7700_b650, 顺路升级为win11;
-    偶尔知道了原来winxp下自身就有可以把全拼输入法WINPY.MB的字序词频导出的工具:
+    偶尔知道了原来winxp下自身就有可以把全拼输入法"WINPY.MB"的字序词频导出的工具:
         "c:/program files/windows nt/accessories/imegen.exe"
         逆转换 -> 选择 "winpy.mb" 文件, 点 逆转换,
             之后会生成对应的 "WINPY.txt";
