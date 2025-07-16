@@ -21,7 +21,10 @@ F = os.path.dirname(__file__)
 
 
 # WINPY.TXT路径:
-WINPY_TXT_PATH = os.path.join(F, "WINPY.TXT")
+WINPY_TXT_PATH_LIST = [
+    os.path.join(F, "WINPY.TXT"),
+    os.path.join(F, "WINPY_GAMEFUNC_EXT.TXT")
+]
 
 # 深蓝导入用的词汇txt输出路径:
 SENLAN_SRC_OUT_PATH = os.path.join(F, "out_senlan_src.txt")
@@ -69,51 +72,53 @@ def get_han_pinyin(line: str) -> tuple[str, str] | None:
 def update_PINYIN_DICT() -> None:
     global PINYIN_DICT
 
-    # 记录是否已进入 "[Text]":
-    is_into_text = False
+    for winpy_txt_path in WINPY_TXT_PATH_LIST:
+        # 记录是否已进入 "[Text]":
+        is_into_text = False
 
-    with open(WINPY_TXT_PATH, "r", encoding="utf-16") as f:
-    # with open(WINPY_TXT_PATH, "rb") as f:
-        for src_line in f:
-            line = src_line.strip()
-            if not line: continue
+        with open(winpy_txt_path, "r", encoding="utf-16") as f:
+        # with open(winpy_txt_path, "rb") as f:
+            for src_line in f:
+                line = src_line.strip()
+                if not line: continue
 
-            # 未进入 "[Text]"之后, 所以不处理:
-            if not is_into_text: 
-                if line == "[Text]": is_into_text = True; 
-                continue
-            
-            # 之后都是进入[Text]后的:
-            han_pinyins = get_han_pinyin(line)
+                # 未进入 "[Text]"之后, 所以不处理:
+                if not is_into_text: 
+                    if line == "[Text]": is_into_text = True; 
+                    continue
+                
+                # 之后都是进入[Text]后的:
+                han_pinyins = get_han_pinyin(line)
 
-            # 没找到打印一下:
-            if not han_pinyins:
-                print(f"没han_pin: {line = }"); continue
-            
-            # 如果不是返回了2个, 打印一下:
-            if len(han_pinyins) != 2:
-                print(f"没有分离出2个: {line = }"); continue
-            han, pinyins = han_pinyins
+                # 没找到打印一下:
+                if not han_pinyins:
+                    print(f"没han_pin: {line = }"); continue
+                
+                # 如果不是返回了2个, 打印一下:
+                if len(han_pinyins) != 2:
+                    print(f"没有分离出2个: {line = }"); continue
+                han, pinyins = han_pinyins
+                han = han.strip()
 
-            # # 打印一下某些关键字:
-            # for test_s in ["警告", "十一国庆节", "肋", "牞"]:
-            #     if test_s in line:
-            #         print(f"'{line}': {han_pinyins = }"); print()
+                # # 打印一下某些关键字:
+                # for test_s in ["警告", "十一国庆节", "肋", "牞"]:
+                #     if test_s in line:
+                #         print(f"'{line}': {han_pinyins = }"); print()
 
-            # "肋le jin" 出来的是: ('肋', 'le jin') 需要处理一下pin只取第一个:
-            pinyin_units = pinyins.split()
-            pinyin = pinyin_units[0]
+                # "肋le jin" 出来的是: ('肋', 'le jin') 需要处理一下pin只取第一个:
+                pinyin_units = pinyins.split()
+                pinyin = pinyin_units[0].strip()
 
-            # # 打印多读音的字并保存:
-            # if len(pinyin_units) > 1: 
-            #     print(f"多读音的字: {line = }, {han_pinyins = }")
-            #     with open("多读音的字词.txt", "a", encoding="utf-8") as of:
-            #         of.write(f"{line = }; {han_pinyins = }; {pinyin = }\n")
+                # # 打印多读音的字并保存:
+                # if len(pinyin_units) > 1: 
+                #     print(f"多读音的字: {line = }, {han_pinyins = }")
+                #     with open("多读音的字词.txt", "a", encoding="utf-8") as of:
+                #         of.write(f"{line = }; {han_pinyins = }; {pinyin = }\n")
 
 
-            # 添加到 PINYIN_DICT 方便自己转换格式:
-            if pinyin not in PINYIN_DICT: PINYIN_DICT[pinyin] = []
-            PINYIN_DICT[pinyin].append(han)
+                # 添加到 PINYIN_DICT 方便自己转换格式:
+                if pinyin not in PINYIN_DICT: PINYIN_DICT[pinyin] = []
+                PINYIN_DICT[pinyin].append(han)
 
 
 
@@ -134,13 +139,18 @@ def main() -> None:
     global PINYIN_DICT
 
     # 查看一下原始文件编码:
-    with open(WINPY_TXT_PATH, "rb") as f: print(f.read(100))
+    with open(WINPY_TXT_PATH_LIST[0], "rb") as f: print(f.read(100))
 
     update_PINYIN_DICT()
     # save_PINYIN_DICT_to_json_txt()
 
+    # 排序, 否则比如我额外加的拼好饭之类会没了:
+    dict_keys = list(PINYIN_DICT.keys())
+    dict_keys_sorted = sorted(dict_keys)
+
     out_txt = ""
-    for pinyin in PINYIN_DICT:
+    for pinyin in dict_keys_sorted:
+    # for pinyin in PINYIN_DICT:
         # 词频, 就是输入的选择位:
         i = 1
         for han in PINYIN_DICT[pinyin]:
@@ -157,6 +167,19 @@ def main() -> None:
 
     with open(SENLAN_SRC_OUT_PATH, "rb") as f:
         print(f.read(100))
+
+
+    """
+    打印测试看他原始字典的排序:
+    """
+    # out_keys_s = ""
+    # for i in range(len(dict_keys)):
+    #     out_keys_s += f"{dict_keys[i]} -> {dict_keys_sorted[i]}\n"
+    #     if dict_keys[i] != dict_keys_sorted[i]:
+    #         print(f"不同了: {dict_keys[i]} -> {dict_keys_sorted[i]}\n")
+
+    # with open("sorted_keys.txt", "w", encoding="utf-8") as f:
+    #     f.write(out_keys_s)
 
 
 

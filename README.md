@@ -45,9 +45,15 @@ win10我在2017年时使用了录制方式导出了字序和词序,用到了今�
     复制(覆盖): "%appdata%/Microsoft/InputMethod/Chs/ChsPinyinEUDPv1.lex"
     即可; 不需要在设置的自定义短语中导入,因为会卡死的; 
     之后如果要清除这些自定义短语就直接删除 "ChsPinyinEUDPv1.lex" 文件即可;
-    
-
 ```   
+
+```c++
+2025.07.16: 允许在全拼5.0默认字序词频的基础上添加短语,
+    加到"WINPY_GAMEFUNC_EXT.txt"里面即可;
+```  
+
+
+
 
 ![image](https://github.com/gamefunc/winxp_quanpin_freq_dict/blob/main/imgs/comp0.jpg)    
 ![image](https://github.com/gamefunc/winxp_quanpin_freq_dict/blob/main/imgs/comp1.jpg)    
